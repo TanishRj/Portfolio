@@ -401,6 +401,44 @@
     border-radius:4px;
   }
 
+  .proj-links{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+  }
+  .proj-link{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--cyan);
+    border:1px solid rgba(79,209,197,0.3);
+    background:rgba(79,209,197,0.05);
+    padding:7px 12px;
+    border-radius:6px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:all .15s ease;
+    flex:1;
+    justify-content:center;
+  }
+  .proj-link:hover{
+    background:rgba(79,209,197,0.12);
+    border-color:var(--cyan);
+  }
+  .proj-link.disabled{
+    color:var(--muted-dim);
+    border-color:var(--panel-border);
+    background:transparent;
+    cursor:default;
+    pointer-events:none;
+  }
+  .proj-link.secondary{
+    color:var(--muted);
+    border-color:var(--panel-border-hi);
+    background:transparent;
+  }
+  .proj-link.secondary:hover{color:var(--text);border-color:var(--cyan);}
+
   /* ---------- SKILLS / SCAN TABLE ---------- */
   .scan-panel{
     background:var(--panel);
@@ -570,6 +608,12 @@
 </style>
 </head>
 <body>
+<!--
+  PROJECT LINKS: search this file for href="#" inside each ".proj-links" block
+  (in the Projects section below) and replace with your real live-demo / source
+  / write-up URLs. Cards with no working link yet are marked "disabled" so they
+  render as plain, non-clickable text instead of a dead link.
+-->
 
 <header class="nav">
   <div class="nav-inner">
@@ -686,18 +730,22 @@
       </div>
       <div class="proj-grid">
         <div class="proj-card">
-          <div class="proj-meta"><span>2024</span><span class="status">● shipped</span></div>
-          <div class="proj-name">Secure RESTful API Backend</div>
+          <div class="proj-meta"><span>2026</span><span class="status">● shipped</span></div>
+          <div class="proj-name">Scalable URL Shortening & Management API
+</div>
           <p class="proj-desc">
-            Scalable REST API with full CRUD, JWT authentication, and role-based access control
-            for a multi-user application. Advanced MongoDB aggregation pipelines power the
-            analytics endpoints, with index tuning that cut query latency significantly.
-            All endpoints validated with Postman test suites.
+            A backend URL Shortener API built with Node.js, Express, PostgreSQL, Drizzle ORM, JWT authentication, and deployed on Vercel.
           </p>
           <div class="proj-stack">
             <span class="stack-pill">Node.js</span><span class="stack-pill">Express</span>
-            <span class="stack-pill">MongoDB</span><span class="stack-pill">JWT</span>
-            <span class="stack-pill">Postman</span>
+            <span class="stack-pill">PostgreSQL</span><span class="stack-pill">Drizzle ORM</span>
+            <span class="stack-pill">ZOD</span>
+            <span class="stack-pill">Docker</span>
+            <span class="stack-pill">Vercel</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="https://backend-projects-lake.vercel.app/" target="_blank" rel="noopener">Live demo ↗</a>
+            <a class="proj-link secondary" href="https://github.com/TanishRj/Backend-Projects/tree/main/url-shortner" target="_blank" rel="noopener">Source ↗</a>
           </div>
         </div>
         <div class="proj-card">
@@ -712,6 +760,10 @@
             <span class="stack-pill">C/C++</span><span class="stack-pill">Python</span>
             <span class="stack-pill">Windows Internals</span><span class="stack-pill">MITRE ATT&CK</span>
           </div>
+          <div class="proj-links">
+            <a class="proj-link secondary" href="https://www.linkedin.com/posts/tanish-choudhary_malwaredevelopment-redteam-binaryanalysis-activity-7367896980317995008-nMNA" target="_blank" rel="noopener">Write-up ↗</a>
+            <!-- <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Source ↗</a> -->
+          </div>
         </div>
         <div class="proj-card">
           <div class="proj-meta"><span>2021</span><span class="status">● 2nd place</span></div>
@@ -724,6 +776,9 @@
           <div class="proj-stack">
             <span class="stack-pill">IoT</span><span class="stack-pill">Arduino</span>
             <span class="stack-pill">Python</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link disabled" href="#">No link yet</a>
           </div>
         </div>
       </div>
