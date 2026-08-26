@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanish Choudhary — Offensive Security &amp; Backend Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0F14;
+    --bg-raised:#0F151C;
+    --panel:#121A22;
+    --panel-border:#212E3A;
+    --panel-border-hi:#2E4152;
+    --text:#E6EDF3;
+    --muted:#7E8FA0;
+    --muted-dim:#4E5D6C;
+    --amber:#FFB454;
+    --cyan:#4FD1C5;
+    --red:#FF6B6B;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --maxw:980px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* ambient scanline texture */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.012) 0px,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    background:radial-gradient(ellipse 900px 600px at 50% -10%, rgba(79,209,197,0.08), transparent 60%);
+  }
+
+  a{color:inherit;text-decoration:none;}
+
+  ::selection{background:var(--cyan);color:#04222080;}
+
+  :focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+
+  .wrap{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:0 28px;
+    position:relative;
+    z-index:2;
+  }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px;height:7px;
+    background:var(--cyan);
+    border-radius:50%;
+    box-shadow:0 0 8px var(--cyan);
+    flex-shrink:0;
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(11,15,20,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--panel-border);
+  }
+  .nav-inner{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:16px 28px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .logo{
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:0.02em;
+  }
+  .logo span{color:var(--amber);}
+  nav.links{
+    display:flex;
+    gap:28px;
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  nav.links a{
+    color:var(--muted);
+    transition:color .15s ease;
+    position:relative;
+  }
+  nav.links a:hover{color:var(--text);}
+  nav.links a::before{
+    content:attr(data-idx);
+    color:var(--muted-dim);
+    margin-right:6px;
+  }
+  @media (max-width:720px){
+    nav.links{display:none;}
+  }
+
+  /* ---------- HERO / TERMINAL ---------- */
+  .hero{
+    padding:76px 0 60px;
+  }
+  .terminal{
+    background:var(--bg-raised);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02);
+  }
+  .term-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 16px;
+    background:#0C1116;
+    border-bottom:1px solid var(--panel-border);
+  }
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .dot.r{background:#FF5F57;}
+  .dot.y{background:#FEBC2E;}
+  .dot.g{background:#28C840;}
+  .term-title{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted-dim);
+    margin-left:8px;
+  }
+  .term-body{
+    padding:24px 22px 26px;
+    font-family:var(--mono);
+    font-size:14px;
+    min-height:210px;
+  }
+  .term-line{color:var(--muted);}
+  .term-line .prompt{color:var(--cyan);}
+  .term-line .path{color:var(--amber);}
+  #term-output{white-space:pre-wrap;}
+  .cursor{
+    display:inline-block;
+    width:8px;height:16px;
+    background:var(--cyan);
+    vertical-align:text-bottom;
+    animation:blink 1s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .hero-profile{
+    margin-top:26px;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .hero-profile.show{opacity:1;transform:translateY(0);}
+
+  .hero-name{
+    font-family:var(--mono);
+    font-weight:800;
+    font-size:clamp(32px,5.4vw,54px);
+    letter-spacing:-0.01em;
+    line-height:1.05;
+  }
+  .hero-name .bracket{color:var(--amber);}
+  .hero-role{
+    margin-top:10px;
+    font-size:clamp(15px,2vw,18px);
+    color:var(--muted);
+    max-width:620px;
+  }
+  .hero-role strong{color:var(--text);font-weight:600;}
+
+  .hero-meta{
+    margin-top:24px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .chip{
+    font-family:var(--mono);
+    font-size:12px;
+    padding:7px 12px;
+    border:1px solid var(--panel-border-hi);
+    border-radius:20px;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .chip.hot{
+    border-color:rgba(255,180,84,0.4);
+    color:var(--amber);
+    background:rgba(255,180,84,0.06);
+  }
+  .chip.link{
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  .chip.link:hover{
+    border-color:var(--cyan);
+    color:var(--cyan);
+    background:rgba(79,209,197,0.06);
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{
+    padding:64px 0;
+    border-top:1px solid var(--panel-border);
+  }
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:34px;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  h2.title{
+    font-family:var(--mono);
+    font-size:clamp(20px,3vw,26px);
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  h2.title .num{color:var(--muted-dim);font-weight:500;}
+  .section-note{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted-dim);
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:24px;
+  }
+  @media (max-width:760px){.about-grid{grid-template-columns:1fr;}}
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    padding:26px;
+  }
+  .about-text p{color:var(--muted);font-size:15px;}
+  .about-text strong{color:var(--text);}
+  .field-list{display:flex;flex-direction:column;gap:14px;}
+  .field{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    font-family:var(--mono);
+    font-size:13px;
+    border-bottom:1px dashed var(--panel-border);
+    padding-bottom:12px;
+  }
+  .field:last-child{border-bottom:none;padding-bottom:0;}
+  .field .k{color:var(--muted-dim);}
+  .field .v{color:var(--text);text-align:right;}
+
+  /* ---------- EXPERIENCE / CASE FILE ---------- */
+  .case{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-left:3px solid var(--amber);
+    border-radius:8px;
+    padding:26px 28px;
+  }
+  .case-head{
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .case-title{font-size:19px;font-weight:600;}
+  .case-org{color:var(--muted);font-size:14px;margin-top:4px;}
+  .case-tag{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--amber);
+    border:1px solid rgba(255,180,84,0.35);
+    padding:4px 10px;
+    border-radius:5px;
+    height:fit-content;
+    white-space:nowrap;
+  }
+  .case ul{
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:14px;
+  }
+  .case li{
+    padding-left:20px;
+    position:relative;
+    color:var(--muted);
+    font-size:14.5px;
+  }
+  .case li::before{
+    content:"›";
+    position:absolute;
+    left:0;
+    color:var(--cyan);
+    font-weight:700;
+  }
+
+  /* ---------- PROJECTS ---------- */
+  .proj-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  @media (max-width:900px){.proj-grid{grid-template-columns:1fr;}}
+  .proj-card{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    transition:border-color .18s ease, transform .18s ease;
+  }
+  .proj-card:hover{border-color:var(--panel-border-hi);transform:translateY(-3px);}
+  .proj-meta{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted-dim);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .proj-meta .status{color:var(--cyan);}
+  .proj-name{font-size:16.5px;font-weight:600;margin-bottom:10px;}
+  .proj-desc{color:var(--muted);font-size:13.8px;flex:1;}
+  .proj-stack{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid var(--panel-border);
+  }
+  .stack-pill{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--muted);
+    background:var(--bg-raised);
+    border:1px solid var(--panel-border);
+    padding:3px 8px;
+    border-radius:4px;
+  }
+
+  .proj-links{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+  }
+  .proj-link{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--cyan);
+    border:1px solid rgba(79,209,197,0.3);
+    background:rgba(79,209,197,0.05);
+    padding:7px 12px;
+    border-radius:6px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:all .15s ease;
+    flex:1;
+    justify-content:center;
+  }
+  .proj-link:hover{
+    background:rgba(79,209,197,0.12);
+    border-color:var(--cyan);
+  }
+  .proj-link.disabled{
+    color:var(--muted-dim);
+    border-color:var(--panel-border);
+    background:transparent;
+    cursor:default;
+    pointer-events:none;
+  }
+  .proj-link.secondary{
+    color:var(--muted);
+    border-color:var(--panel-border-hi);
+    background:transparent;
+  }
+  .proj-link.secondary:hover{color:var(--text);border-color:var(--cyan);}
+
+  /* ---------- SKILLS / SCAN TABLE ---------- */
+  .scan-panel{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .scan-summary{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted-dim);
+    padding:16px 22px;
+    border-bottom:1px solid var(--panel-border);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .scan-summary .ok{color:var(--cyan);}
+  table.scan{
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  table.scan thead th{
+    text-align:left;
+    color:var(--muted-dim);
+    font-weight:500;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:12px 22px;
+    border-bottom:1px solid var(--panel-border);
+  }
+  table.scan tbody td{
+    padding:12px 22px;
+    border-bottom:1px solid var(--panel-border);
+    vertical-align:middle;
+  }
+  table.scan tbody tr:last-child td{border-bottom:none;}
+  table.scan tbody tr:hover{background:rgba(255,255,255,0.015);}
+  .id-col{color:var(--muted-dim);width:60px;}
+  .state-col{color:var(--cyan);white-space:nowrap;}
+  .cat-col{color:var(--muted-dim);white-space:nowrap;}
+  .bar-track{
+    width:100%;
+    max-width:140px;
+    height:5px;
+    background:var(--bg-raised);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--amber));border-radius:3px;}
+  @media (max-width:640px){
+    .cat-col{display:none;}
+  }
+
+  /* ---------- CERTS / ACHIEVEMENTS ---------- */
+  .cred-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:700px){.cred-grid{grid-template-columns:1fr;}}
+  .cred{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .cred .check{
+    color:var(--cyan);
+    font-family:var(--mono);
+    font-size:14px;
+    margin-top:1px;
+    flex-shrink:0;
+  }
+  .cred .body b{display:block;font-size:14px;font-weight:600;}
+  .cred .body span{font-size:12.5px;color:var(--muted-dim);font-family:var(--mono);}
+
+  .achieve-strip{
+    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .ach-row{
+    display:flex;
+    gap:14px;
+    align-items:baseline;
+    font-size:14px;
+    color:var(--muted);
+    padding:12px 0;
+    border-bottom:1px dashed var(--panel-border);
+  }
+  .ach-row:last-child{border-bottom:none;}
+  .ach-row .mark{
+    font-family:var(--mono);
+    color:var(--amber);
+    font-size:12px;
+    flex-shrink:0;
+  }
+  .ach-row strong{color:var(--text);}
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  footer{
+    padding:70px 0 50px;
+    border-top:1px solid var(--panel-border);
+  }
+  .contact-panel{
+    background:linear-gradient(160deg, var(--panel) 0%, var(--bg-raised) 100%);
+    border:1px solid var(--panel-border-hi);
+    border-radius:12px;
+    padding:44px 38px;
+    text-align:center;
+  }
+  .contact-panel h2{
+    font-family:var(--mono);
+    font-size:clamp(22px,3.4vw,30px);
+    margin-bottom:14px;
+  }
+  .contact-panel h2 .prompt{color:var(--cyan);}
+  .contact-panel p{color:var(--muted);max-width:480px;margin:0 auto 26px;}
+  .contact-links{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .btn{
+    font-family:var(--mono);
+    font-size:13px;
+    padding:12px 20px;
+    border-radius:7px;
+    border:1px solid var(--panel-border-hi);
+    color:var(--text);
+    transition:all .15s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .btn.primary{
+    background:var(--cyan);
+    color:#04201E;
+    border-color:var(--cyan);
+    font-weight:600;
+  }
+  .btn.primary:hover{background:#69E0D5;}
+  .btn:not(.primary):hover{border-color:var(--cyan);color:var(--cyan);}
+
+  .foot-note{
+    text-align:center;
+    margin-top:36px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--muted-dim);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+<!--
+  PROJECT LINKS: search this file for href="#" inside each ".proj-links" block
+  (in the Projects section below) and replace with your real live-demo / source
+  / write-up URLs. Cards with no working link yet are marked "disabled" so they
+  render as plain, non-clickable text instead of a dead link.
+-->
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo">[<span>TC</span>]</div>
+    <nav class="links">
+      <a href="#about" data-idx="01">about</a>
+      <a href="#experience" data-idx="02">experience</a>
+      <a href="#projects" data-idx="03">projects</a>
+      <a href="#skills" data-idx="04">skills</a>
+      <a href="#credentials" data-idx="05">credentials</a>
+      <a href="#contact" data-idx="06">contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="terminal">
+        <div class="term-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="term-title">root@tanish — recon session</span>
+        </div>
+        <div class="term-body">
+          <div id="term-output"></div>
+        </div>
+      </div>
+
+      <div class="hero-profile" id="hero-profile">
+        <h1 class="hero-name">Tanish Choudhary <span class="bracket">//</span></h1>
+        <p class="hero-role">
+          Final-year CS student pairing <strong>offensive security</strong> instinct with
+          <strong>backend engineering</strong> discipline. Top 3% on TryHackMe, cyber-crime
+          investigation experience with Uttar Pradesh Police, and production REST APIs shipped
+          in Node.js and MongoDB.
+        </p>
+        <div class="hero-meta">
+          <span class="chip hot">● Open to full-time roles</span>
+          <span class="chip">Dehradun, India</span>
+          <span class="chip">B.Tech CSE — DIT University, 2026</span>
+          <a class="chip link" href="mailto:cybersectanishchoudhary@gmail.com">email</a>
+          <a class="chip link" href="https://linkedin.com/in/tanish-choudhary" target="_blank" rel="noopener">linkedin</a>
+          <a class="chip link" href="https://tryhackme.com" target="_blank" rel="noopener">tryhackme ↗ top 3%</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="title"><span class="num">01</span> About</h2>
+        <span class="section-note">summary.txt</span>
+      </div>
+      <div class="about-grid">
+        <div class="panel about-text">
+          <p style="margin-bottom:14px;">
+            I split my attention between two disciplines that turn out to reinforce each other:
+            <strong>breaking systems</strong> to understand how they fail, and
+            <strong>building systems</strong> that hold up under real use. On the offensive side
+            that means web app testing against the OWASP Top 10, Active Directory attack paths,
+            and malware/evasion research. On the engineering side it means REST APIs with proper
+            auth, role-based access control, and query performance that doesn't fall over under load.
+          </p>
+          <p>
+            In June 2025 I worked inside the Amroha Cyber Crime Unit under the Uttar Pradesh
+            Police, supporting real investigations — correlating artefacts across devices and
+            cloud accounts, running OSINT, and writing reports that had to hold up outside a lab.
+            That experience is the lens I bring to everything else: security work that has to be
+            explainable, and code that has to be defensible.
+          </p>
+        </div>
+        <div class="panel field-list">
+          <div class="field"><span class="k">STATUS</span><span class="v">Final-year student</span></div>
+          <div class="field"><span class="k">FOCUS</span><span class="v">Offensive Security + Backend</span></div>
+          <div class="field"><span class="k">RANK</span><span class="v">TryHackMe — Top 3% global</span></div>
+          <div class="field"><span class="k">CLEARANCE</span><span class="v">APCSIP-2025, UP Police</span></div>
+          <div class="field"><span class="k">STACK</span><span class="v">Node.js · Express · MongoDB</span></div>
+          <div class="field"><span class="k">BASE</span><span class="v">Dehradun, Uttarakhand</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="title"><span class="num">02</span> Experience</h2>
+        <span class="section-note">case_log.md</span>
+      </div>
+      <div class="case">
+        <div class="case-head">
+          <div>
+            <div class="case-title">Cybersecurity Intern — APCSIP-2025</div>
+            <div class="case-org">Uttar Pradesh Police, Amroha Cyber Crime Unit — Amroha, UP</div>
+          </div>
+          <div class="case-tag">JUNE 2025</div>
+        </div>
+        <ul>
+          <li>Assisted investigators with cybercrime case analysis, correlating digital artefacts across seized devices, logs, and cloud accounts.</li>
+          <li>Conducted OSINT investigations and digital forensics examinations, producing structured evidence reports for law-enforcement proceedings.</li>
+          <li>Supported incident-response workflows including log collection, timeline reconstruction, and extraction of indicators of compromise (IOCs).</li>
+          <li>Contributed to public cyber-awareness campaigns on phishing, social engineering, and safe online practices.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="title"><span class="num">03</span> Projects</h2>
+        <span class="section-note">./builds</span>
+      </div>
+      <div class="proj-grid">
+        <div class="proj-card">
+          <div class="proj-meta"><span>2026</span><span class="status">● shipped</span></div>
+          <div class="proj-name">Scalable URL Shortening & Management API
+</div>
+          <p class="proj-desc">
+            A backend URL Shortener API built with Node.js, Express, PostgreSQL, Drizzle ORM, JWT authentication, and deployed on Vercel.
+          </p>
+          <div class="proj-stack">
+            <span class="stack-pill">Node.js</span><span class="stack-pill">Express</span>
+            <span class="stack-pill">PostgreSQL</span><span class="stack-pill">Drizzle ORM</span>
+            <span class="stack-pill">ZOD</span>
+            <span class="stack-pill">Docker</span>
+            <span class="stack-pill">Vercel</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link" href="https://backend-projects-lake.vercel.app/" target="_blank" rel="noopener">Live demo ↗</a>
+            <a class="proj-link secondary" href="https://github.com/TanishRj/Backend-Projects/tree/main/url-shortner" target="_blank" rel="noopener">Source ↗</a>
+          </div>
+        </div>
+        <div class="proj-card">
+          <div class="proj-meta"><span>2024</span><span class="status">● research</span></div>
+          <div class="proj-name">Malware &amp; Evasion Research Lab</div>
+          <p class="proj-desc">
+            Custom payloads built from Sektor7's Malware Development Essentials curriculum —
+            process injection, shellcode encoding, and AV/EDR evasion — mapped against
+            MITRE ATT&amp;CK techniques on Windows internals.
+          </p>
+          <div class="proj-stack">
+            <span class="stack-pill">C/C++</span><span class="stack-pill">Python</span>
+            <span class="stack-pill">Windows Internals</span><span class="stack-pill">MITRE ATT&CK</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link secondary" href="https://www.linkedin.com/posts/tanish-choudhary_malwaredevelopment-redteam-binaryanalysis-activity-7367896980317995008-nMNA" target="_blank" rel="noopener">Write-up ↗</a>
+            <!-- <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Source ↗</a> -->
+          </div>
+        </div>
+        <div class="proj-card">
+          <div class="proj-meta"><span>2021</span><span class="status">● 2nd place</span></div>
+          <div class="proj-name">Covid-Testrone</div>
+          <p class="proj-desc">
+            An automated rapid-testing device integrating IoT sensors with a real-time web
+            dashboard for result visualisation and reporting. Won national 2nd place at the
+            ATL Marathon by NITI Aayog, against hundreds of competing teams.
+          </p>
+          <div class="proj-stack">
+            <span class="stack-pill">IoT</span><span class="stack-pill">Arduino</span>
+            <span class="stack-pill">Python</span>
+          </div>
+          <div class="proj-links">
+            <a class="proj-link disabled" href="#">No link yet</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="title"><span class="num">04</span> Skills</h2>
+        <span class="section-note">scan --profile tanish</span>
+      </div>
+      <div class="scan-panel">
+        <div class="scan-summary">
+          <span>18 capabilities profiled</span>
+          <span class="ok">scan complete — 0 gaps flagged</span>
+        </div>
+        <table class="scan">
+          <thead>
+            <tr><th class="id-col">id</th><th>skill</th><th class="cat-col">category</th><th>proficiency</th></tr>
+          </thead>
+          <tbody id="scan-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="credentials">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="title"><span class="num">05</span> Credentials &amp; Achievements</h2>
+        <span class="section-note">verified.json</span>
+      </div>
+      <div class="cred-grid">
+        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Jr. Penetration Tester</b><span>TryHackMe</span></div></div>
+        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Pre-Security</b><span>TryHackMe</span></div></div>
+        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Cyber Security 101</b><span>TryHackMe</span></div></div>
+        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Malware Development Essentials</b><span>Sektor7 Institute</span></div></div>
+        <div class="cred"><span class="check">[✓]</span><div class="body"><b>SQL Injection Attacks</b><span>EC-Council</span></div></div>
+        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Intro to Dark Web, Ops &amp; Cybercrime</b><span>EC-Council</span></div></div>
+      </div>
+
+      <div class="achieve-strip">
+        <div class="ach-row"><span class="mark">[AWARD]</span><span><strong>Top 3% globally on TryHackMe</strong> — completed the Jr. Penetration Tester and Red Teamer paths out of millions of users.</span></div>
+        <div class="ach-row"><span class="mark">[AWARD]</span><span><strong>National 2nd Place, ATL Marathon</strong> (NITI Aayog) for the Covid-Testrone innovation project.</span></div>
+        <div class="ach-row"><span class="mark">[ACTIVE]</span><span><strong>Regular Hack The Box player</strong> — solves Web, Pwn, and Forensics challenges.</span></div>
+        <div class="ach-row"><span class="mark">[SELECT]</span><span><strong>Competitively selected for APCSIP-2025</strong>, a state-level cybersecurity internship run by the Uttar Pradesh Police.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="wrap">
+      <div class="contact-panel">
+        <h2><span class="prompt">$</span> contact --init</h2>
+        <p>Open to full-time offensive-security or backend engineering roles. The fastest way to reach me is email — I usually reply within a day.</p>
+        <div class="contact-links">
+          <a class="btn primary" href="mailto:cybersectanishchoudhary@gmail.com">Send an email</a>
+          <a class="btn" href="https://linkedin.com/in/tanishchoudhary" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a class="btn" href="https://tryhackme.com" target="_blank" rel="noopener">TryHackMe ↗</a>
+        </div>
+      </div>
+      <div class="foot-note">Dehradun, Uttarakhand, India — © 2026 Tanish Choudhary</div>
+    </div>
+  </footer>
+</main>
+
+<script>
+  // Terminal boot sequence
+  const lines = [
+    { p: "root@recon:~$ ", t: "nmap -sV --top-ports 2 tanish.dev", cls:"" },
+    { p: "", t: "Starting scan engine v1.0 ...", cls:"muted" },
+    { p: "", t: "PORT     STATE   SERVICE", cls:"muted" },
+    { p: "", t: "22/tcp   open    offensive-security", cls:"cyan" },
+    { p: "", t: "3000/tcp open    backend-engineering", cls:"cyan" },
+    { p: "", t: "Scan done: 2 services detected on 1 host.", cls:"muted" },
+    { p: "root@recon:~$ ", t: "whoami --full", cls:"" },
+  ];
+
+  const out = document.getElementById('term-output');
+  const heroProfile = document.getElementById('hero-profile');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function colorFor(cls){
+    if(cls === 'cyan') return 'var(--cyan)';
+    if(cls === 'muted') return 'var(--muted)';
+    return 'var(--text)';
+  }
+
+  async function typeLine(line){
+    const row = document.createElement('div');
+    row.className = 'term-line';
+    const promptSpan = document.createElement('span');
+    promptSpan.className = 'prompt';
+    promptSpan.textContent = line.p;
+    const textSpan = document.createElement('span');
+    textSpan.style.color = colorFor(line.cls);
+    row.appendChild(promptSpan);
+    row.appendChild(textSpan);
+    out.appendChild(row);
+
+    if(reduceMotion){
+      textSpan.textContent = line.t;
+      return;
+    }
+    for(let i=0;i<line.t.length;i++){
+      textSpan.textContent += line.t[i];
+      await new Promise(r => setTimeout(r, 10 + Math.random()*14));
+    }
+  }
+
+  async function boot(){
+    for(const line of lines){
+      await typeLine(line);
+      await new Promise(r => setTimeout(r, reduceMotion ? 0 : 120));
+    }
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    out.appendChild(cursor);
+    setTimeout(() => {
+      heroProfile.classList.add('show');
+    }, reduceMotion ? 0 : 250);
+  }
+  boot();
+
+  // Skills scan table
+  const skills = [
+    ["0x01","Penetration Testing","Security",95],
+    ["0x02","Web App Security (OWASP Top 10)","Security",92],
+    ["0x03","Active Directory Attacks","Security",85],
+    ["0x04","OSINT & Digital Forensics","Security",90],
+    ["0x05","Malware Analysis & AV Evasion","Security",82],
+    ["0x06","Node.js / Express.js","Backend",90],
+    ["0x07","MongoDB (Advanced Aggregation)","Backend",88],
+    ["0x08","REST API Design & JWT Auth","Backend",90],
+    ["0x09","Python","Languages",88],
+    ["0x0A","JavaScript (Node.js)","Languages",88],
+    ["0x0B","C / C++","Languages",78],
+    ["0x0C","PowerShell / Bash","Scripting",80],
+    ["0x0D","Metasploit / Burp Suite","Tools",85],
+    ["0x0E","Nmap / Wireshark","Tools",90],
+    ["0x0F","SQLMap / Gobuster","Tools",83],
+    ["0x10","Kali Linux","Platforms",92],
+    ["0x11","Docker / Git","Platforms",80],
+    ["0x12","Windows / Active Directory","Platforms",84],
+  ];
+
+  const body = document.getElementById('scan-body');
+  skills.forEach(([id, name, cat, level]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="id-col">${id}</td>
+      <td>${name}</td>
+      <td class="cat-col">${cat}</td>
+      <td>
+        <div class="bar-track"><div class="bar-fill" style="width:${level}%"></div></div>
+      </td>`;
+    body.appendChild(tr);
+  });
+</script>
+
+</body>
+</html>
