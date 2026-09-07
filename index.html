@@ -8,25 +8,38 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /*
+    ============================================================
+    EDIT-ME QUICK REFERENCE
+    - Email / LinkedIn: search "cybersectanishchoudhary" and
+      "linkedin.com/in/tanish-choudhary" below.
+    - TryHackMe / HackTheBox profile URLs: search "PLATFORM LINKS"
+      in the HTML body further down.
+    - Resume files: search "RESUME DOWNLOADS" in the <script> at
+      the bottom of this file.
+    - Project links: search "PROJECT LINKS" comment in the body.
+    ============================================================
+  */
   :root{
-    --bg:#0B0F14;
-    --bg-raised:#0F151C;
-    --panel:#121A22;
-    --panel-border:#212E3A;
-    --panel-border-hi:#2E4152;
-    --text:#E6EDF3;
-    --muted:#7E8FA0;
-    --muted-dim:#4E5D6C;
+    --bg:#06090A;
+    --bg-raised:#0A0F10;
+    --panel:#0D1414;
+    --panel-border:#1C2E2A;
+    --panel-border-hi:#2E4F45;
+    --text:#E9F3EE;
+    --muted:#83A093;
+    --muted-dim:#4A5F56;
+    --green:#39FF88;
+    --green-dim:#1F8F52;
+    --green-soft:rgba(57,255,136,0.10);
     --amber:#FFB454;
-    --cyan:#4FD1C5;
-    --red:#FF6B6B;
+    --red:#FF5C5C;
     --mono:'JetBrains Mono', ui-monospace, monospace;
     --sans:'IBM Plex Sans', -apple-system, sans-serif;
-    --maxw:980px;
+    --maxw:1000px;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
-
   html{scroll-behavior:smooth;}
 
   body{
@@ -38,7 +51,16 @@
     overflow-x:hidden;
   }
 
-  /* ambient scanline texture */
+  /* matrix rain canvas — full page, very low opacity */
+  #rain{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    opacity:0.055;
+    pointer-events:none;
+  }
+
+  /* scanlines + top glow, sits above rain, below content */
   body::before{
     content:"";
     position:fixed;
@@ -47,31 +69,24 @@
     z-index:1;
     background:repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,0.012) 0px,
-      rgba(255,255,255,0.012) 1px,
+      rgba(255,255,255,0.014) 0px,
+      rgba(255,255,255,0.014) 1px,
       transparent 1px,
       transparent 3px
     );
   }
-
   body::after{
     content:"";
     position:fixed;
     inset:0;
     pointer-events:none;
     z-index:1;
-    background:radial-gradient(ellipse 900px 600px at 50% -10%, rgba(79,209,197,0.08), transparent 60%);
+    background:radial-gradient(ellipse 1000px 620px at 50% -10%, rgba(57,255,136,0.09), transparent 60%);
   }
 
   a{color:inherit;text-decoration:none;}
-
-  ::selection{background:var(--cyan);color:#04222080;}
-
-  :focus-visible{
-    outline:2px solid var(--cyan);
-    outline-offset:3px;
-    border-radius:2px;
-  }
+  ::selection{background:var(--green);color:#04140C;}
+  :focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:2px;}
 
   .wrap{
     max-width:var(--maxw);
@@ -81,12 +96,26 @@
     z-index:2;
   }
 
+  /* ---------- HUD corner brackets (signature motif) ---------- */
+  .hud{position:relative;}
+  .hud::before,.hud::after{
+    content:"";
+    position:absolute;
+    width:14px;height:14px;
+    opacity:0.55;
+    transition:opacity .18s ease;
+    pointer-events:none;
+  }
+  .hud::before{top:-1px;left:-1px;border-top:2px solid var(--green);border-left:2px solid var(--green);}
+  .hud::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--green);border-right:2px solid var(--green);}
+  .hud:hover::before,.hud:hover::after{opacity:1;}
+
   .eyebrow{
     font-family:var(--mono);
     font-size:12px;
     letter-spacing:0.14em;
     text-transform:uppercase;
-    color:var(--cyan);
+    color:var(--green);
     display:flex;
     align-items:center;
     gap:10px;
@@ -95,9 +124,9 @@
   .eyebrow::before{
     content:"";
     width:7px;height:7px;
-    background:var(--cyan);
+    background:var(--green);
     border-radius:50%;
-    box-shadow:0 0 8px var(--cyan);
+    box-shadow:0 0 8px var(--green);
     flex-shrink:0;
   }
 
@@ -106,68 +135,66 @@
     position:sticky;
     top:0;
     z-index:50;
-    background:rgba(11,15,20,0.86);
+    background:rgba(6,9,10,0.88);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--panel-border);
   }
   .nav-inner{
     max-width:var(--maxw);
     margin:0 auto;
-    padding:16px 28px;
+    padding:15px 28px;
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:16px;
   }
   .logo{
     font-family:var(--mono);
     font-weight:700;
-    font-size:16px;
+    font-size:15px;
     letter-spacing:0.02em;
+    color:var(--muted);
+    white-space:nowrap;
   }
-  .logo span{color:var(--amber);}
+  .logo b{color:var(--green);font-weight:700;text-shadow:0 0 10px rgba(57,255,136,0.45);}
   nav.links{
     display:flex;
-    gap:28px;
+    gap:6px;
     font-family:var(--mono);
-    font-size:13px;
+    font-size:12.5px;
   }
   nav.links a{
     color:var(--muted);
-    transition:color .15s ease;
-    position:relative;
+    padding:7px 10px;
+    border-radius:5px;
+    transition:color .15s ease, background .15s ease;
+    white-space:nowrap;
   }
-  nav.links a:hover{color:var(--text);}
-  nav.links a::before{
-    content:attr(data-idx);
-    color:var(--muted-dim);
-    margin-right:6px;
-  }
-  @media (max-width:720px){
+  nav.links a:hover{color:var(--green);background:var(--green-soft);}
+  @media (max-width:820px){
     nav.links{display:none;}
   }
 
   /* ---------- RESUME DROPDOWN ---------- */
-  .resume-dd{position:relative;}
+  .resume-dd{position:relative;flex-shrink:0;}
   .resume-dd-btn{
     font-family:var(--mono);
-    font-size:13px;
+    font-size:12.5px;
     font-weight:600;
-    padding:9px 16px;
-    border-radius:7px;
-    border:1px solid var(--cyan);
-    background:rgba(79,209,197,0.08);
-    color:var(--cyan);
+    padding:9px 14px;
+    border-radius:6px;
+    border:1px solid var(--green-dim);
+    background:var(--green-soft);
+    color:var(--green);
     display:inline-flex;
     align-items:center;
     gap:8px;
     cursor:pointer;
-    transition:background .15s ease, color .15s ease;
+    transition:background .15s ease, color .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
   }
-  .resume-dd-btn:hover{background:var(--cyan);color:#04201E;}
-  .resume-dd-btn .caret{
-    font-size:10px;
-    transition:transform .15s ease;
-  }
+  .resume-dd-btn:hover{background:var(--green);color:#04140C;box-shadow:0 0 18px rgba(57,255,136,0.35);}
+  .resume-dd-btn .caret{font-size:10px;transition:transform .15s ease;}
   .resume-dd.open .resume-dd-btn .caret{transform:rotate(180deg);}
   .resume-dd-menu{
     position:absolute;
@@ -178,7 +205,7 @@
     border:1px solid var(--panel-border-hi);
     border-radius:10px;
     padding:8px;
-    box-shadow:0 24px 60px -20px rgba(0,0,0,0.65);
+    box-shadow:0 24px 60px -20px rgba(0,0,0,0.7);
     display:none;
     flex-direction:column;
     gap:2px;
@@ -195,75 +222,41 @@
     transition:background .12s ease;
   }
   .resume-dd-item:hover{background:var(--bg-raised);}
-  .resume-dd-item .role{
-    font-size:13.5px;
-    font-weight:600;
-  }
-  .resume-dd-item .meta{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--muted-dim);
-  }
-  .resume-dd-empty{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--muted-dim);
-    padding:10px 12px;
-  }
-  /* footer variant: buttons laid out inline, no dropdown chrome */
-  .resume-inline{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    justify-content:center;
-  }
-  .resume-inline .btn{cursor:pointer;}
+  .resume-dd-item .role{font-size:13.5px;font-weight:600;}
+  .resume-dd-item .meta{font-family:var(--mono);font-size:11px;color:var(--muted-dim);}
+  .resume-dd-empty{font-family:var(--mono);font-size:12px;color:var(--muted-dim);padding:10px 12px;}
+  .resume-inline{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
 
   /* ---------- HERO / TERMINAL ---------- */
-  .hero{
-    padding:76px 0 60px;
-  }
+  .hero{padding:64px 0 56px;}
   .terminal{
     background:var(--bg-raised);
     border:1px solid var(--panel-border);
     border-radius:10px;
     overflow:hidden;
-    box-shadow:0 30px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02);
+    box-shadow:0 30px 90px -30px rgba(0,0,0,0.75), 0 0 0 1px rgba(57,255,136,0.03);
   }
   .term-bar{
     display:flex;
     align-items:center;
     gap:8px;
     padding:12px 16px;
-    background:#0C1116;
+    background:#080D0D;
     border-bottom:1px solid var(--panel-border);
   }
   .dot{width:11px;height:11px;border-radius:50%;}
   .dot.r{background:#FF5F57;}
   .dot.y{background:#FEBC2E;}
   .dot.g{background:#28C840;}
-  .term-title{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--muted-dim);
-    margin-left:8px;
-  }
-  .term-body{
-    padding:24px 22px 26px;
-    font-family:var(--mono);
-    font-size:14px;
-    min-height:210px;
-  }
-  .term-line{color:var(--muted);}
-  .term-line .prompt{color:var(--cyan);}
-  .term-line .path{color:var(--amber);}
+  .term-title{font-family:var(--mono);font-size:12px;color:var(--muted-dim);margin-left:8px;}
+  .term-body{padding:24px 22px 26px;font-family:var(--mono);font-size:13.5px;min-height:230px;}
+  .term-line .prompt{color:var(--green);}
   #term-output{white-space:pre-wrap;}
   .cursor{
-    display:inline-block;
-    width:8px;height:16px;
-    background:var(--cyan);
-    vertical-align:text-bottom;
+    display:inline-block;width:8px;height:16px;
+    background:var(--green);vertical-align:text-bottom;
     animation:blink 1s steps(1) infinite;
+    box-shadow:0 0 8px var(--green);
   }
   @keyframes blink{50%{opacity:0;}}
 
@@ -278,103 +271,99 @@
   .hero-name{
     font-family:var(--mono);
     font-weight:800;
-    font-size:clamp(32px,5.4vw,54px);
+    font-size:clamp(30px,5.2vw,52px);
     letter-spacing:-0.01em;
-    line-height:1.05;
+    line-height:1.08;
+    text-shadow:0 0 24px rgba(57,255,136,0.18);
   }
-  .hero-name .bracket{color:var(--amber);}
+  .hero-name .bracket{color:var(--green);}
   .hero-role{
-    margin-top:10px;
-    font-size:clamp(15px,2vw,18px);
+    margin-top:12px;
+    font-size:clamp(15px,2vw,17.5px);
     color:var(--muted);
-    max-width:620px;
-  }
-  .hero-role strong{color:var(--text);font-weight:600;}
-
-  .hero-meta{
-    margin-top:24px;
+    max-width:640px;
     display:flex;
-    flex-wrap:wrap;
     gap:10px;
   }
+  .hero-role .gt{color:var(--green);flex-shrink:0;font-family:var(--mono);}
+  .hero-role strong{color:var(--text);font-weight:600;}
+
+  .hero-meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px;}
   .chip{
     font-family:var(--mono);
     font-size:12px;
     padding:7px 12px;
     border:1px solid var(--panel-border-hi);
-    border-radius:20px;
+    border-radius:5px;
     color:var(--muted);
+  }
+  .chip.hot{border-color:var(--green-dim);color:var(--green);background:var(--green-soft);}
+
+  /* platform buttons — TryHackMe / HackTheBox */
+  .platform-row{
+    margin-top:22px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .platform-btn{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    padding:14px 20px;
+    background:var(--panel);
+    border:1px solid var(--panel-border-hi);
+    border-radius:10px;
+    min-width:200px;
+    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .platform-btn:hover{
+    transform:translateY(-3px);
+    border-color:var(--green);
+    box-shadow:0 14px 34px -14px rgba(57,255,136,0.35);
+  }
+  .platform-btn .p-top{
     display:flex;
     align-items:center;
-    gap:7px;
+    justify-content:space-between;
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--muted-dim);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
   }
-  .chip.hot{
-    border-color:rgba(255,180,84,0.4);
-    color:var(--amber);
-    background:rgba(255,180,84,0.06);
-  }
-  .chip.link{
-    cursor:pointer;
-    transition:border-color .15s ease, color .15s ease, background .15s ease;
-  }
-  .chip.link:hover{
-    border-color:var(--cyan);
-    color:var(--cyan);
-    background:rgba(79,209,197,0.06);
-  }
+  .platform-btn .p-name{font-size:16px;font-weight:700;color:var(--text);}
+  .platform-btn .p-stat{font-family:var(--mono);font-size:12px;color:var(--green);}
+  .platform-btn .arrow{color:var(--muted-dim);transition:transform .15s ease, color .15s ease;}
+  .platform-btn:hover .arrow{transform:translate(2px,-2px);color:var(--green);}
 
   /* ---------- SECTION SHELL ---------- */
-  section{
-    padding:64px 0;
-    border-top:1px solid var(--panel-border);
-  }
+  section{padding:60px 0;border-top:1px solid var(--panel-border);position:relative;z-index:2;}
   .section-head{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    margin-bottom:34px;
-    gap:16px;
-    flex-wrap:wrap;
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin-bottom:32px;gap:16px;flex-wrap:wrap;
   }
   h2.title{
     font-family:var(--mono);
-    font-size:clamp(20px,3vw,26px);
+    font-size:clamp(18px,2.6vw,23px);
     font-weight:700;
-    display:flex;
-    align-items:center;
-    gap:10px;
+    display:flex;align-items:center;gap:10px;
   }
-  h2.title .num{color:var(--muted-dim);font-weight:500;}
-  .section-note{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--muted-dim);
-  }
+  h2.title .cmt{color:var(--muted-dim);font-weight:500;}
+  .section-note{font-family:var(--mono);font-size:12px;color:var(--muted-dim);}
 
   /* ---------- ABOUT ---------- */
-  .about-grid{
-    display:grid;
-    grid-template-columns:1.4fr 1fr;
-    gap:24px;
-  }
+  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;}
   @media (max-width:760px){.about-grid{grid-template-columns:1fr;}}
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:10px;
-    padding:26px;
-  }
-  .about-text p{color:var(--muted);font-size:15px;}
+  .panel{background:var(--panel);border:1px solid var(--panel-border);border-radius:10px;padding:26px;}
+  .about-text p{color:var(--muted);font-size:14.8px;}
+  .about-text p + p{margin-top:14px;}
   .about-text strong{color:var(--text);}
   .field-list{display:flex;flex-direction:column;gap:14px;}
   .field{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    font-family:var(--mono);
-    font-size:13px;
-    border-bottom:1px dashed var(--panel-border);
-    padding-bottom:12px;
+    display:flex;justify-content:space-between;gap:12px;
+    font-family:var(--mono);font-size:12.5px;
+    border-bottom:1px dashed var(--panel-border);padding-bottom:12px;
   }
   .field:last-child{border-bottom:none;padding-bottom:0;}
   .field .k{color:var(--muted-dim);}
@@ -382,322 +371,132 @@
 
   /* ---------- EXPERIENCE / CASE FILE ---------- */
   .case{
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-left:3px solid var(--amber);
-    border-radius:8px;
-    padding:26px 28px;
+    background:var(--panel);border:1px solid var(--panel-border);
+    border-left:3px solid var(--green);border-radius:8px;padding:26px 28px;
   }
-  .case-head{
-    display:flex;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:16px;
-  }
-  .case-title{font-size:19px;font-weight:600;}
-  .case-org{color:var(--muted);font-size:14px;margin-top:4px;}
+  .case + .case{margin-top:20px;}
+  .case-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+  .case-title{font-size:18.5px;font-weight:600;}
+  .case-org{color:var(--muted);font-size:13.5px;margin-top:4px;}
   .case-tag{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--amber);
-    border:1px solid rgba(255,180,84,0.35);
-    padding:4px 10px;
-    border-radius:5px;
-    height:fit-content;
-    white-space:nowrap;
+    font-family:var(--mono);font-size:11px;color:var(--green);
+    border:1px solid var(--green-dim);padding:4px 10px;border-radius:5px;
+    height:fit-content;white-space:nowrap;background:var(--green-soft);
   }
-  .case ul{
-    list-style:none;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-top:14px;
-  }
-  .case li{
-    padding-left:20px;
-    position:relative;
-    color:var(--muted);
-    font-size:14.5px;
-  }
-  .case li::before{
-    content:"›";
-    position:absolute;
-    left:0;
-    color:var(--cyan);
-    font-weight:700;
-  }
+  .case ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .case li{padding-left:20px;position:relative;color:var(--muted);font-size:14px;}
+  .case li::before{content:"›";position:absolute;left:0;color:var(--green);font-weight:700;}
 
   /* ---------- PROJECTS ---------- */
-  .proj-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-  }
+  .proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
   @media (max-width:900px){.proj-grid{grid-template-columns:1fr;}}
   .proj-card{
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:10px;
-    padding:22px;
-    display:flex;
-    flex-direction:column;
+    background:var(--panel);border:1px solid var(--panel-border);border-radius:10px;
+    padding:22px;display:flex;flex-direction:column;
     transition:border-color .18s ease, transform .18s ease;
   }
   .proj-card:hover{border-color:var(--panel-border-hi);transform:translateY(-3px);}
-  .proj-meta{
-    font-family:var(--mono);
-    font-size:11px;
-    color:var(--muted-dim);
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:14px;
-  }
-  .proj-meta .status{color:var(--cyan);}
-  .proj-name{font-size:16.5px;font-weight:600;margin-bottom:10px;}
-  .proj-desc{color:var(--muted);font-size:13.8px;flex:1;}
-  .proj-stack{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    margin-top:16px;
-    padding-top:14px;
-    border-top:1px solid var(--panel-border);
-  }
-  .stack-pill{
-    font-family:var(--mono);
-    font-size:10.5px;
-    color:var(--muted);
-    background:var(--bg-raised);
-    border:1px solid var(--panel-border);
-    padding:3px 8px;
-    border-radius:4px;
-  }
-
-  .proj-links{
-    display:flex;
-    gap:10px;
-    margin-top:14px;
-  }
+  .proj-meta{font-family:var(--mono);font-size:11px;color:var(--muted-dim);display:flex;justify-content:space-between;margin-bottom:14px;}
+  .proj-meta .status{color:var(--green);}
+  .proj-name{font-size:16px;font-weight:600;margin-bottom:10px;}
+  .proj-desc{color:var(--muted);font-size:13.5px;flex:1;}
+  .proj-stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;padding-top:14px;border-top:1px solid var(--panel-border);}
+  .stack-pill{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:var(--bg-raised);border:1px solid var(--panel-border);padding:3px 8px;border-radius:4px;}
+  .proj-links{display:flex;gap:10px;margin-top:14px;}
   .proj-link{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--cyan);
-    border:1px solid rgba(79,209,197,0.3);
-    background:rgba(79,209,197,0.05);
-    padding:7px 12px;
-    border-radius:6px;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    transition:all .15s ease;
-    flex:1;
-    justify-content:center;
+    font-family:var(--mono);font-size:12px;color:var(--green);
+    border:1px solid var(--green-dim);background:var(--green-soft);
+    padding:7px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:6px;
+    transition:all .15s ease;flex:1;justify-content:center;
   }
-  .proj-link:hover{
-    background:rgba(79,209,197,0.12);
-    border-color:var(--cyan);
-  }
-  .proj-link.disabled{
-    color:var(--muted-dim);
-    border-color:var(--panel-border);
-    background:transparent;
-    cursor:default;
-    pointer-events:none;
-  }
-  .proj-link.secondary{
-    color:var(--muted);
-    border-color:var(--panel-border-hi);
-    background:transparent;
-  }
-  .proj-link.secondary:hover{color:var(--text);border-color:var(--cyan);}
+  .proj-link:hover{background:var(--green);color:#04140C;}
+  .proj-link.disabled{color:var(--muted-dim);border-color:var(--panel-border);background:transparent;cursor:default;pointer-events:none;}
+  .proj-link.secondary{color:var(--muted);border-color:var(--panel-border-hi);background:transparent;}
+  .proj-link.secondary:hover{color:var(--text);border-color:var(--green);background:var(--green-soft);}
 
   /* ---------- SKILLS / SCAN TABLE ---------- */
-  .scan-panel{
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:10px;
-    overflow:hidden;
-  }
+  .scan-panel{background:var(--panel);border:1px solid var(--panel-border);border-radius:10px;overflow:hidden;}
   .scan-summary{
-    font-family:var(--mono);
-    font-size:12px;
-    color:var(--muted-dim);
-    padding:16px 22px;
-    border-bottom:1px solid var(--panel-border);
-    display:flex;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:8px;
+    font-family:var(--mono);font-size:12px;color:var(--muted-dim);padding:16px 22px;
+    border-bottom:1px solid var(--panel-border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
   }
-  .scan-summary .ok{color:var(--cyan);}
-  table.scan{
-    width:100%;
-    border-collapse:collapse;
-    font-family:var(--mono);
-    font-size:13px;
-  }
+  .scan-summary .ok{color:var(--green);}
+  table.scan{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;}
   table.scan thead th{
-    text-align:left;
-    color:var(--muted-dim);
-    font-weight:500;
-    font-size:11px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    padding:12px 22px;
-    border-bottom:1px solid var(--panel-border);
+    text-align:left;color:var(--muted-dim);font-weight:500;font-size:11px;
+    letter-spacing:0.06em;text-transform:uppercase;padding:12px 22px;border-bottom:1px solid var(--panel-border);
   }
-  table.scan tbody td{
-    padding:12px 22px;
-    border-bottom:1px solid var(--panel-border);
-    vertical-align:middle;
-  }
+  table.scan tbody td{padding:11px 22px;border-bottom:1px solid var(--panel-border);vertical-align:middle;}
   table.scan tbody tr:last-child td{border-bottom:none;}
-  table.scan tbody tr:hover{background:rgba(255,255,255,0.015);}
+  table.scan tbody tr:hover{background:rgba(57,255,136,0.03);}
   .id-col{color:var(--muted-dim);width:60px;}
-  .state-col{color:var(--cyan);white-space:nowrap;}
   .cat-col{color:var(--muted-dim);white-space:nowrap;}
-  .bar-track{
-    width:100%;
-    max-width:140px;
-    height:5px;
-    background:var(--bg-raised);
-    border-radius:3px;
-    overflow:hidden;
-  }
-  .bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--amber));border-radius:3px;}
-  @media (max-width:640px){
-    .cat-col{display:none;}
-  }
+  .bar-track{width:100%;max-width:140px;height:5px;background:var(--bg-raised);border-radius:3px;overflow:hidden;}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--green-dim),var(--green));border-radius:3px;}
+  @media (max-width:640px){.cat-col{display:none;}}
 
   /* ---------- CERTS / ACHIEVEMENTS ---------- */
-  .cred-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-  }
+  .cred-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   @media (max-width:700px){.cred-grid{grid-template-columns:1fr;}}
-  .cred{
-    display:flex;
-    align-items:flex-start;
-    gap:12px;
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:8px;
-    padding:16px 18px;
-  }
-  .cred .check{
-    color:var(--cyan);
-    font-family:var(--mono);
-    font-size:14px;
-    margin-top:1px;
-    flex-shrink:0;
-  }
-  .cred .body b{display:block;font-size:14px;font-weight:600;}
-  .cred .body span{font-size:12.5px;color:var(--muted-dim);font-family:var(--mono);}
+  .cred{display:flex;align-items:flex-start;gap:12px;background:var(--panel);border:1px solid var(--panel-border);border-radius:8px;padding:16px 18px;}
+  .cred .check{color:var(--green);font-family:var(--mono);font-size:14px;margin-top:1px;flex-shrink:0;}
+  .cred .body b{display:block;font-size:13.5px;font-weight:600;}
+  .cred .body span{font-size:12px;color:var(--muted-dim);font-family:var(--mono);}
 
-  .achieve-strip{
-    margin-top:20px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-  .ach-row{
-    display:flex;
-    gap:14px;
-    align-items:baseline;
-    font-size:14px;
-    color:var(--muted);
-    padding:12px 0;
-    border-bottom:1px dashed var(--panel-border);
-  }
+  .achieve-strip{margin-top:20px;display:flex;flex-direction:column;gap:12px;}
+  .ach-row{display:flex;gap:14px;align-items:baseline;font-size:13.5px;color:var(--muted);padding:12px 0;border-bottom:1px dashed var(--panel-border);}
   .ach-row:last-child{border-bottom:none;}
-  .ach-row .mark{
-    font-family:var(--mono);
-    color:var(--amber);
-    font-size:12px;
-    flex-shrink:0;
-  }
+  .ach-row .mark{font-family:var(--mono);color:var(--amber);font-size:11.5px;flex-shrink:0;}
   .ach-row strong{color:var(--text);}
 
   /* ---------- CONTACT / FOOTER ---------- */
-  footer{
-    padding:70px 0 50px;
-    border-top:1px solid var(--panel-border);
-  }
+  footer{padding:66px 0 48px;border-top:1px solid var(--panel-border);position:relative;z-index:2;}
   .contact-panel{
     background:linear-gradient(160deg, var(--panel) 0%, var(--bg-raised) 100%);
-    border:1px solid var(--panel-border-hi);
-    border-radius:12px;
-    padding:44px 38px;
-    text-align:center;
+    border:1px solid var(--panel-border-hi);border-radius:12px;padding:42px 36px;text-align:center;
   }
-  .contact-panel h2{
-    font-family:var(--mono);
-    font-size:clamp(22px,3.4vw,30px);
-    margin-bottom:14px;
-  }
-  .contact-panel h2 .prompt{color:var(--cyan);}
-  .contact-panel p{color:var(--muted);max-width:480px;margin:0 auto 26px;}
-  .contact-links{
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:12px;
-  }
+  .contact-panel h2{font-family:var(--mono);font-size:clamp(20px,3.2vw,28px);margin-bottom:14px;}
+  .contact-panel h2 .prompt{color:var(--green);}
+  .contact-panel p{color:var(--muted);max-width:480px;margin:0 auto 24px;font-size:14.5px;}
+  .contact-links{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;}
   .btn{
-    font-family:var(--mono);
-    font-size:13px;
-    padding:12px 20px;
-    border-radius:7px;
-    border:1px solid var(--panel-border-hi);
-    color:var(--text);
-    transition:all .15s ease;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
+    font-family:var(--mono);font-size:12.5px;padding:11px 18px;border-radius:7px;
+    border:1px solid var(--panel-border-hi);color:var(--text);transition:all .15s ease;
+    display:inline-flex;align-items:center;gap:8px;
   }
-  .btn.primary{
-    background:var(--cyan);
-    color:#04201E;
-    border-color:var(--cyan);
-    font-weight:600;
-  }
-  .btn.primary:hover{background:#69E0D5;}
-  .btn:not(.primary):hover{border-color:var(--cyan);color:var(--cyan);}
+  .btn.primary{background:var(--green);color:#04140C;border-color:var(--green);font-weight:600;}
+  .btn.primary:hover{background:#6BFFAB;box-shadow:0 0 20px rgba(57,255,136,0.4);}
+  .btn:not(.primary):hover{border-color:var(--green);color:var(--green);}
 
-  .foot-note{
-    text-align:center;
-    margin-top:36px;
-    font-family:var(--mono);
-    font-size:11.5px;
-    color:var(--muted-dim);
-  }
+  .foot-note{text-align:center;margin-top:34px;font-family:var(--mono);font-size:11px;color:var(--muted-dim);}
 
   @media (prefers-reduced-motion: reduce){
-    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+    *{animation-duration:0.001ms !important;transition-duration:0.001ms !important;}
     html{scroll-behavior:auto;}
+    #rain{display:none;}
   }
 </style>
 </head>
 <body>
 <!--
-  PROJECT LINKS: search this file for href="#" inside each ".proj-links" block
-  (in the Projects section below) and replace with your real live-demo / source
-  / write-up URLs. Cards with no working link yet are marked "disabled" so they
-  render as plain, non-clickable text instead of a dead link.
+  PROJECT LINKS: inside the Projects section below, each card has a
+  .proj-links block with href="#" placeholders — replace with your
+  real live-demo / source / write-up URLs. A card can use class
+  "disabled" on the <a> to show plain non-clickable text instead.
 -->
+
+<canvas id="rain"></canvas>
 
 <header class="nav">
   <div class="nav-inner">
-    <div class="logo">[<span>TC</span>]</div>
+    <div class="logo">root<b>@</b>tanish<b>:~$</b></div>
     <nav class="links">
-      <a href="#about" data-idx="01">about</a>
-      <a href="#experience" data-idx="02">experience</a>
-      <a href="#projects" data-idx="03">projects</a>
-      <a href="#skills" data-idx="04">skills</a>
-      <a href="#credentials" data-idx="05">credentials</a>
-      <a href="#contact" data-idx="06">contact</a>
+      <a href="#about">about</a>
+      <a href="#experience">experience</a>
+      <a href="#projects">projects</a>
+      <a href="#skills">skills</a>
+      <a href="#credentials">credentials</a>
+      <a href="#contact">contact</a>
     </nav>
     <div class="resume-dd" id="resume-dd-nav">
       <button type="button" class="resume-dd-btn" aria-haspopup="true" aria-expanded="false">
@@ -711,7 +510,7 @@
 <main>
   <section class="hero">
     <div class="wrap">
-      <div class="terminal">
+      <div class="terminal hud">
         <div class="term-bar">
           <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
           <span class="term-title">root@tanish — recon session</span>
@@ -724,18 +523,33 @@
       <div class="hero-profile" id="hero-profile">
         <h1 class="hero-name">Tanish Choudhary <span class="bracket">//</span></h1>
         <p class="hero-role">
-          Final-year CS student pairing <strong>offensive security</strong> instinct with
-          <strong>backend engineering</strong> discipline. Top 3% on TryHackMe, cyber-crime
-          investigation experience with Uttar Pradesh Police, and production REST APIs shipped
-          in Node.js and MongoDB.
+          <span class="gt">&gt;</span>
+          <span>
+            Final-year CS student pairing <strong>offensive security</strong> instinct with
+            <strong>backend engineering</strong> discipline. Top 3% on TryHackMe, cyber-crime
+            investigation experience with Uttar Pradesh Police, and production REST APIs
+            shipped in Node.js and MongoDB.
+          </span>
         </p>
         <div class="hero-meta">
-          <span class="chip hot">● Open to full-time roles</span>
+          <span class="chip hot">● open to full-time roles</span>
           <span class="chip">Dehradun, India</span>
           <span class="chip">B.Tech CSE — DIT University, 2026</span>
-          <a class="chip link" href="mailto:cybersectanishchoudhary@gmail.com">email</a>
-          <a class="chip link" href="https://linkedin.com/in/tanish-choudhary" target="_blank" rel="noopener">linkedin</a>
-          <a class="chip link" href="https://tryhackme.com/" target="_blank" rel="noopener">tryhackme ↗ top 3%</a>
+          <a class="chip" href="mailto:cybersectanishchoudhary@gmail.com">email ↗</a>
+          <a class="chip" href="https://linkedin.com/in/tanish-choudhary" target="_blank" rel="noopener">linkedin ↗</a>
+        </div>
+
+        <div class="platform-row">
+          <a class="platform-btn hud" href="https://tryhackme.com/p/TANISHRJ" target="_blank" rel="noopener">
+            <span class="p-top"><span>ctf platform</span><span class="arrow">↗</span></span>
+            <span class="p-name">TryHackMe</span>
+            <span class="p-stat">Top 3% global · Jr. Pentester</span>
+          </a>
+          <a class="platform-btn hud" href="https://profile.hackthebox.com/profile/019d393d-54a0-7049-847d-4040d411249b" target="_blank" rel="noopener">
+            <span class="p-top"><span>ctf platform</span><span class="arrow">↗</span></span>
+            <span class="p-name">Hack The Box</span>
+            <span class="p-stat">Active player · Web / Pwn / Forensics</span>
+          </a>
         </div>
       </div>
     </div>
@@ -744,28 +558,29 @@
   <section id="about">
     <div class="wrap">
       <div class="section-head">
-        <h2 class="title"><span class="num">01</span> About</h2>
+        <h2 class="title"><span class="cmt">//</span> About</h2>
         <span class="section-note">summary.txt</span>
       </div>
       <div class="about-grid">
-        <div class="panel about-text">
-          <p style="margin-bottom:14px;">
-            I split my attention between two disciplines that turn out to reinforce each other:
+        <div class="panel hud about-text">
+          <p>
+            I split my attention between two disciplines that reinforce each other:
             <strong>breaking systems</strong> to understand how they fail, and
-            <strong>building systems</strong> that hold up under real use. On the offensive side
-            that means web app testing against the OWASP Top 10, Active Directory attack paths,
-            and malware/evasion research. On the engineering side it means REST APIs with proper
-            auth, role-based access control, and query performance that doesn't fall over under load.
+            <strong>building systems</strong> that hold up under real use. On the offensive
+            side that means web app testing against the OWASP Top 10, Active Directory attack
+            paths, and malware/evasion research. On the engineering side it means REST APIs
+            with proper auth, role-based access control, and query performance that doesn't
+            fall over under load.
           </p>
           <p>
             In June 2025 I worked inside the Amroha Cyber Crime Unit under the Uttar Pradesh
             Police, supporting real investigations — correlating artefacts across devices and
-            cloud accounts, running OSINT, and writing reports that had to hold up outside a lab.
-            That experience is the lens I bring to everything else: security work that has to be
+            cloud accounts, running OSINT, and writing reports that had to hold up outside a
+            lab. That's the lens I bring to everything else: security work that has to be
             explainable, and code that has to be defensible.
           </p>
         </div>
-        <div class="panel field-list">
+        <div class="panel hud field-list">
           <div class="field"><span class="k">STATUS</span><span class="v">Final-year student</span></div>
           <div class="field"><span class="k">FOCUS</span><span class="v">Offensive Security + Backend</span></div>
           <div class="field"><span class="k">RANK</span><span class="v">TryHackMe — Top 3% global</span></div>
@@ -780,10 +595,24 @@
   <section id="experience">
     <div class="wrap">
       <div class="section-head">
-        <h2 class="title"><span class="num">02</span> Experience</h2>
+        <h2 class="title"><span class="cmt">//</span> Experience</h2>
         <span class="section-note">case_log.md</span>
       </div>
-      <div class="case">
+      <div class="case hud">
+        <div class="case-head">
+          <div>
+            <div class="case-title">Web Operation Engineer — Teleperformance</div>
+            <div class="case-org">Teleperformance</div>
+          </div>
+          <div class="case-tag">APR – JUN 2026 · 3 MOS</div>
+        </div>
+        <ul>
+          <li>Provided technical support for a domain registration and website-builder platform, resolving customer issues related to DNS/nameserver configuration, domain transfers, renewals, and account privacy settings.</li>
+          <li>Diagnosed and triaged SSL certificate, hosting, and site-publishing issues, escalating complex or suspected fraud/phishing-related cases through structured SLA-driven workflows.</li>
+          <li>Investigated account-security concerns (unauthorized access, domain hijacking attempts) and guided customers through account recovery and security best practices.</li>
+        </ul>
+      </div>
+      <div class="case hud">
         <div class="case-head">
           <div>
             <div class="case-title">Cybersecurity Intern — APCSIP-2025</div>
@@ -804,11 +633,11 @@
   <section id="projects">
     <div class="wrap">
       <div class="section-head">
-        <h2 class="title"><span class="num">03</span> Projects</h2>
+        <h2 class="title"><span class="cmt">//</span> Projects</h2>
         <span class="section-note">./builds</span>
       </div>
       <div class="proj-grid">
-        <div class="proj-card">
+        <div class="proj-card hud">
           <div class="proj-meta"><span>2024</span><span class="status">● shipped</span></div>
           <div class="proj-name">Secure RESTful API Backend</div>
           <p class="proj-desc">
@@ -827,7 +656,7 @@
             <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Source ↗</a>
           </div>
         </div>
-        <div class="proj-card">
+        <div class="proj-card hud">
           <div class="proj-meta"><span>2024</span><span class="status">● research</span></div>
           <div class="proj-name">Malware &amp; Evasion Research Lab</div>
           <p class="proj-desc">
@@ -844,7 +673,7 @@
             <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Source ↗</a>
           </div>
         </div>
-        <div class="proj-card">
+        <div class="proj-card hud">
           <div class="proj-meta"><span>2021</span><span class="status">● 2nd place</span></div>
           <div class="proj-name">Covid-Testrone</div>
           <p class="proj-desc">
@@ -867,10 +696,10 @@
   <section id="skills">
     <div class="wrap">
       <div class="section-head">
-        <h2 class="title"><span class="num">04</span> Skills</h2>
+        <h2 class="title"><span class="cmt">//</span> Skills</h2>
         <span class="section-note">scan --profile tanish</span>
       </div>
-      <div class="scan-panel">
+      <div class="scan-panel hud">
         <div class="scan-summary">
           <span>18 capabilities profiled</span>
           <span class="ok">scan complete — 0 gaps flagged</span>
@@ -888,16 +717,16 @@
   <section id="credentials">
     <div class="wrap">
       <div class="section-head">
-        <h2 class="title"><span class="num">05</span> Credentials &amp; Achievements</h2>
+        <h2 class="title"><span class="cmt">//</span> Credentials &amp; Achievements</h2>
         <span class="section-note">verified.json</span>
       </div>
       <div class="cred-grid">
-        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Jr. Penetration Tester</b><span>TryHackMe</span></div></div>
-        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Pre-Security</b><span>TryHackMe</span></div></div>
-        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Cyber Security 101</b><span>TryHackMe</span></div></div>
-        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Malware Development Essentials</b><span>Sektor7 Institute</span></div></div>
-        <div class="cred"><span class="check">[✓]</span><div class="body"><b>SQL Injection Attacks</b><span>EC-Council</span></div></div>
-        <div class="cred"><span class="check">[✓]</span><div class="body"><b>Intro to Dark Web, Ops &amp; Cybercrime</b><span>EC-Council</span></div></div>
+        <div class="cred hud"><span class="check">[✓]</span><div class="body"><b>Jr. Penetration Tester</b><span>TryHackMe</span></div></div>
+        <div class="cred hud"><span class="check">[✓]</span><div class="body"><b>Pre-Security</b><span>TryHackMe</span></div></div>
+        <div class="cred hud"><span class="check">[✓]</span><div class="body"><b>Cyber Security 101</b><span>TryHackMe</span></div></div>
+        <div class="cred hud"><span class="check">[✓]</span><div class="body"><b>Malware Development Essentials</b><span>Sektor7 Institute</span></div></div>
+        <div class="cred hud"><span class="check">[✓]</span><div class="body"><b>SQL Injection Attacks</b><span>EC-Council</span></div></div>
+        <div class="cred hud"><span class="check">[✓]</span><div class="body"><b>Intro to Dark Web, Ops &amp; Cybercrime</b><span>EC-Council</span></div></div>
       </div>
 
       <div class="achieve-strip">
@@ -911,13 +740,14 @@
 
   <footer id="contact">
     <div class="wrap">
-      <div class="contact-panel">
+      <div class="contact-panel hud">
         <h2><span class="prompt">$</span> contact --init</h2>
         <p>Open to full-time offensive-security or backend engineering roles. The fastest way to reach me is email — I usually reply within a day.</p>
         <div class="contact-links">
           <a class="btn primary" href="mailto:cybersectanishchoudhary@gmail.com">Send an email</a>
           <a class="btn" href="https://linkedin.com/in/tanish-choudhary" target="_blank" rel="noopener">LinkedIn ↗</a>
-          <a class="btn" href="https://tryhackme.com" target="_blank" rel="noopener">TryHackMe ↗</a>
+          <a class="btn" href="https://tryhackme.com/p/TANISHRJ" target="_blank" rel="noopener">TryHackMe ↗</a>
+          <a class="btn" href="https://profile.hackthebox.com/profile/019d393d-54a0-7049-847d-4040d411249b" target="_blank" rel="noopener">Hack The Box ↗</a>
         </div>
         <div class="resume-inline" id="resume-inline-footer" style="margin-top:14px;"></div>
       </div>
@@ -927,14 +757,56 @@
 </main>
 
 <script>
-  // Terminal boot sequence
+  // ============================================================
+  // MATRIX RAIN — subtle background texture, whole page
+  // ============================================================
+  (function(){
+    const canvas = document.getElementById('rain');
+    if(!canvas) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = canvas.getContext('2d');
+    let w, h, cols, drops;
+    const chars = "01アイウエオカキクケコサシスセソ$#@&%{}[]<>/\\";
+    const fontSize = 15;
+
+    function setup(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      cols = Math.floor(w / fontSize);
+      drops = new Array(cols).fill(1);
+    }
+    setup();
+    window.addEventListener('resize', setup);
+
+    function draw(){
+      ctx.fillStyle = 'rgba(6,9,10,0.06)';
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = '#39FF88';
+      ctx.font = fontSize + 'px monospace';
+      for(let i=0;i<drops.length;i++){
+        const text = chars[Math.floor(Math.random()*chars.length)];
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+        if(drops[i]*fontSize > h && Math.random() > 0.975){
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 55);
+  })();
+
+  // ============================================================
+  // TERMINAL BOOT SEQUENCE
+  // ============================================================
   const lines = [
     { p: "root@recon:~$ ", t: "nmap -sV --top-ports 2 tanish.dev", cls:"" },
     { p: "", t: "Starting scan engine v1.0 ...", cls:"muted" },
     { p: "", t: "PORT     STATE   SERVICE", cls:"muted" },
-    { p: "", t: "22/tcp   open    offensive-security", cls:"cyan" },
-    { p: "", t: "3000/tcp open    backend-engineering", cls:"cyan" },
+    { p: "", t: "22/tcp   open    offensive-security", cls:"green" },
+    { p: "", t: "3000/tcp open    backend-engineering", cls:"green" },
     { p: "", t: "Scan done: 2 services detected on 1 host.", cls:"muted" },
+    { p: "root@recon:~$ ", t: "id", cls:"" },
+    { p: "", t: "uid=0(tanish) groups=offsec,backend,ctf", cls:"green" },
     { p: "root@recon:~$ ", t: "whoami --full", cls:"" },
   ];
 
@@ -943,7 +815,7 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function colorFor(cls){
-    if(cls === 'cyan') return 'var(--cyan)';
+    if(cls === 'green') return 'var(--green)';
     if(cls === 'muted') return 'var(--muted)';
     return 'var(--text)';
   }
@@ -973,18 +845,18 @@
   async function boot(){
     for(const line of lines){
       await typeLine(line);
-      await new Promise(r => setTimeout(r, reduceMotion ? 0 : 120));
+      await new Promise(r => setTimeout(r, reduceMotion ? 0 : 110));
     }
     const cursor = document.createElement('span');
     cursor.className = 'cursor';
     out.appendChild(cursor);
-    setTimeout(() => {
-      heroProfile.classList.add('show');
-    }, reduceMotion ? 0 : 250);
+    setTimeout(() => { heroProfile.classList.add('show'); }, reduceMotion ? 0 : 250);
   }
   boot();
 
-  // Skills scan table
+  // ============================================================
+  // SKILLS SCAN TABLE
+  // ============================================================
   const skills = [
     ["0x01","Penetration Testing","Security",95],
     ["0x02","Web App Security (OWASP Top 10)","Security",92],
@@ -1005,7 +877,6 @@
     ["0x11","Docker / Git","Platforms",80],
     ["0x12","Windows / Active Directory","Platforms",84],
   ];
-
   const body = document.getElementById('scan-body');
   skills.forEach(([id, name, cat, level]) => {
     const tr = document.createElement('tr');
@@ -1013,9 +884,7 @@
       <td class="id-col">${id}</td>
       <td>${name}</td>
       <td class="cat-col">${cat}</td>
-      <td>
-        <div class="bar-track"><div class="bar-fill" style="width:${level}%"></div></div>
-      </td>`;
+      <td><div class="bar-track"><div class="bar-fill" style="width:${level}%"></div></div></td>`;
     body.appendChild(tr);
   });
 
@@ -1024,7 +893,7 @@
   // role-specific resumes. Each entry needs:
   //   label : text shown to the visitor
   //   file  : path to the PDF (relative to this HTML file)
-  //   note  : short subtext, e.g. file size or "updated" date
+  //   note  : short subtext, e.g. focus area
   //
   // Files should live in a "resumes" folder next to this file:
   //   /resumes/tanish-choudhary-cybersecurity.pdf
@@ -1033,23 +902,12 @@
   // buttons both render straight from this list.
   // ============================================================
   const RESUMES = [
-    {
-      label: "Cybersecurity / Pentesting",
-      file: "resumes/tanish-choudhary-cybersecurity.pdf",
-      note: "Offensive security focus"
-    },
-    {
-      label: "Backend Developer",
-      file: "resumes/tanish-choudhary-backend.pdf",
-      note: "Node.js / API engineering focus"
-    }
+    { label: "Cybersecurity / Pentesting", file: "resumes/tanish-choudhary-cybersecurity.pdf", note: "Offensive security focus" },
+    { label: "Backend Developer", file: "resumes/tanish-choudhary-backend.pdf", note: "Node.js / API engineering focus" }
     // { label: "General", file: "resumes/tanish-choudhary-general.pdf", note: "All-round CV" },
   ];
 
-  function downloadName(resume){
-    // suggested filename for the browser's save dialog
-    return resume.file.split('/').pop();
-  }
+  function downloadName(resume){ return resume.file.split('/').pop(); }
 
   function renderResumeDropdown(){
     const dd = document.getElementById('resume-dd-nav');
@@ -1060,7 +918,6 @@
     if(RESUMES.length === 0){
       menu.innerHTML = `<div class="resume-dd-empty">No resume uploaded yet</div>`;
     } else if(RESUMES.length === 1){
-      // single resume: button becomes a direct download link, no dropdown needed
       const r = RESUMES[0];
       const a = document.createElement('a');
       a.className = 'resume-dd-btn';
@@ -1085,7 +942,7 @@
       btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
     document.addEventListener('click', (e) => {
-      if(!dd.contains(e.target)) {
+      if(!dd.contains(e.target)){
         dd.classList.remove('open');
         btn.setAttribute('aria-expanded', 'false');
       }
@@ -1101,12 +958,9 @@
   function renderResumeFooter(){
     const el = document.getElementById('resume-inline-footer');
     if(!el) return;
-    if(RESUMES.length === 0){
-      el.innerHTML = '';
-      return;
-    }
-    el.innerHTML = RESUMES.map((r, i) => `
-      <a class="btn ${i === 0 ? 'primary' : ''}" href="${r.file}" download="${downloadName(r)}">
+    if(RESUMES.length === 0){ el.innerHTML = ''; return; }
+    el.innerHTML = RESUMES.map((r,i) => `
+      <a class="btn ${i===0 ? 'primary' : ''}" href="${r.file}" download="${downloadName(r)}">
         Download — ${r.label}
       </a>
     `).join('');
