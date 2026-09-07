@@ -146,6 +146,79 @@
     nav.links{display:none;}
   }
 
+  /* ---------- RESUME DROPDOWN ---------- */
+  .resume-dd{position:relative;}
+  .resume-dd-btn{
+    font-family:var(--mono);
+    font-size:13px;
+    font-weight:600;
+    padding:9px 16px;
+    border-radius:7px;
+    border:1px solid var(--cyan);
+    background:rgba(79,209,197,0.08);
+    color:var(--cyan);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .resume-dd-btn:hover{background:var(--cyan);color:#04201E;}
+  .resume-dd-btn .caret{
+    font-size:10px;
+    transition:transform .15s ease;
+  }
+  .resume-dd.open .resume-dd-btn .caret{transform:rotate(180deg);}
+  .resume-dd-menu{
+    position:absolute;
+    top:calc(100% + 10px);
+    right:0;
+    min-width:250px;
+    background:var(--panel);
+    border:1px solid var(--panel-border-hi);
+    border-radius:10px;
+    padding:8px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,0.65);
+    display:none;
+    flex-direction:column;
+    gap:2px;
+    z-index:70;
+  }
+  .resume-dd.open .resume-dd-menu{display:flex;}
+  .resume-dd-item{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    padding:10px 12px;
+    border-radius:6px;
+    color:var(--text);
+    transition:background .12s ease;
+  }
+  .resume-dd-item:hover{background:var(--bg-raised);}
+  .resume-dd-item .role{
+    font-size:13.5px;
+    font-weight:600;
+  }
+  .resume-dd-item .meta{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted-dim);
+  }
+  .resume-dd-empty{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted-dim);
+    padding:10px 12px;
+  }
+  /* footer variant: buttons laid out inline, no dropdown chrome */
+  .resume-inline{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+  }
+  .resume-inline .btn{cursor:pointer;}
+
   /* ---------- HERO / TERMINAL ---------- */
   .hero{
     padding:76px 0 60px;
@@ -626,6 +699,12 @@
       <a href="#credentials" data-idx="05">credentials</a>
       <a href="#contact" data-idx="06">contact</a>
     </nav>
+    <div class="resume-dd" id="resume-dd-nav">
+      <button type="button" class="resume-dd-btn" aria-haspopup="true" aria-expanded="false">
+        Resume <span class="caret">▾</span>
+      </button>
+      <div class="resume-dd-menu" role="menu"></div>
+    </div>
   </div>
 </header>
 
@@ -655,7 +734,7 @@
           <span class="chip">Dehradun, India</span>
           <span class="chip">B.Tech CSE — DIT University, 2026</span>
           <a class="chip link" href="mailto:cybersectanishchoudhary@gmail.com">email</a>
-          <a class="chip link" href="https://www.linkedin.com/in/tanish-choudhary/" target="_blank" rel="noopener">linkedin</a>
+          <a class="chip link" href="https://linkedin.com/in/tanishchoudhary" target="_blank" rel="noopener">linkedin</a>
           <a class="chip link" href="https://tryhackme.com" target="_blank" rel="noopener">tryhackme ↗ top 3%</a>
         </div>
       </div>
@@ -730,22 +809,22 @@
       </div>
       <div class="proj-grid">
         <div class="proj-card">
-          <div class="proj-meta"><span>2026</span><span class="status">● shipped</span></div>
-          <div class="proj-name">Scalable URL Shortening & Management API
-</div>
+          <div class="proj-meta"><span>2024</span><span class="status">● shipped</span></div>
+          <div class="proj-name">Secure RESTful API Backend</div>
           <p class="proj-desc">
-            A backend URL Shortener API built with Node.js, Express, PostgreSQL, Drizzle ORM, JWT authentication, and deployed on Vercel.
+            Scalable REST API with full CRUD, JWT authentication, and role-based access control
+            for a multi-user application. Advanced MongoDB aggregation pipelines power the
+            analytics endpoints, with index tuning that cut query latency significantly.
+            All endpoints validated with Postman test suites.
           </p>
           <div class="proj-stack">
             <span class="stack-pill">Node.js</span><span class="stack-pill">Express</span>
-            <span class="stack-pill">PostgreSQL</span><span class="stack-pill">Drizzle ORM</span>
-            <span class="stack-pill">ZOD</span>
-            <span class="stack-pill">Docker</span>
-            <span class="stack-pill">Vercel</span>
+            <span class="stack-pill">MongoDB</span><span class="stack-pill">JWT</span>
+            <span class="stack-pill">Postman</span>
           </div>
           <div class="proj-links">
-            <a class="proj-link" href="https://backend-projects-lake.vercel.app/" target="_blank" rel="noopener">Live demo ↗</a>
-            <a class="proj-link secondary" href="https://github.com/TanishRj/Backend-Projects/tree/main/url-shortner" target="_blank" rel="noopener">Source ↗</a>
+            <a class="proj-link" href="#" target="_blank" rel="noopener">Live demo ↗</a>
+            <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Source ↗</a>
           </div>
         </div>
         <div class="proj-card">
@@ -761,8 +840,8 @@
             <span class="stack-pill">Windows Internals</span><span class="stack-pill">MITRE ATT&CK</span>
           </div>
           <div class="proj-links">
-            <a class="proj-link secondary" href="https://www.linkedin.com/posts/tanish-choudhary_malwaredevelopment-redteam-binaryanalysis-activity-7367896980317995008-nMNA" target="_blank" rel="noopener">Write-up ↗</a>
-            <!-- <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Source ↗</a> -->
+            <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Write-up ↗</a>
+            <a class="proj-link secondary" href="#" target="_blank" rel="noopener">Source ↗</a>
           </div>
         </div>
         <div class="proj-card">
@@ -837,9 +916,10 @@
         <p>Open to full-time offensive-security or backend engineering roles. The fastest way to reach me is email — I usually reply within a day.</p>
         <div class="contact-links">
           <a class="btn primary" href="mailto:cybersectanishchoudhary@gmail.com">Send an email</a>
-          <a class="btn" href="https://linkedin.com/in/tanish-choudhary" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a class="btn" href="https://linkedin.com/in/tanishchoudhary" target="_blank" rel="noopener">LinkedIn ↗</a>
           <a class="btn" href="https://tryhackme.com" target="_blank" rel="noopener">TryHackMe ↗</a>
         </div>
+        <div class="resume-inline" id="resume-inline-footer" style="margin-top:14px;"></div>
       </div>
       <div class="foot-note">Dehradun, Uttarakhand, India — © 2026 Tanish Choudhary</div>
     </div>
@@ -938,6 +1018,102 @@
       </td>`;
     body.appendChild(tr);
   });
+
+  // ============================================================
+  // RESUME DOWNLOADS — edit this array to add / remove / rename
+  // role-specific resumes. Each entry needs:
+  //   label : text shown to the visitor
+  //   file  : path to the PDF (relative to this HTML file)
+  //   note  : short subtext, e.g. file size or "updated" date
+  //
+  // Files should live in a "resumes" folder next to this file:
+  //   /resumes/tanish-choudhary-cybersecurity.pdf
+  //   /resumes/tanish-choudhary-backend.pdf
+  // Add as many entries as you like — the dropdown and the footer
+  // buttons both render straight from this list.
+  // ============================================================
+  const RESUMES = [
+    {
+      label: "Cybersecurity / Pentesting",
+      file: "resumes/tanish-choudhary-cybersecurity.pdf",
+      note: "Offensive security focus"
+    },
+    {
+      label: "Backend Developer",
+      file: "resumes/tanish-choudhary-backend.pdf",
+      note: "Node.js / API engineering focus"
+    }
+    // { label: "General", file: "resumes/tanish-choudhary-general.pdf", note: "All-round CV" },
+  ];
+
+  function downloadName(resume){
+    // suggested filename for the browser's save dialog
+    return resume.file.split('/').pop();
+  }
+
+  function renderResumeDropdown(){
+    const dd = document.getElementById('resume-dd-nav');
+    if(!dd) return;
+    const btn = dd.querySelector('.resume-dd-btn');
+    const menu = dd.querySelector('.resume-dd-menu');
+
+    if(RESUMES.length === 0){
+      menu.innerHTML = `<div class="resume-dd-empty">No resume uploaded yet</div>`;
+    } else if(RESUMES.length === 1){
+      // single resume: button becomes a direct download link, no dropdown needed
+      const r = RESUMES[0];
+      const a = document.createElement('a');
+      a.className = 'resume-dd-btn';
+      a.href = r.file;
+      a.setAttribute('download', downloadName(r));
+      a.innerHTML = 'Download resume';
+      dd.replaceChild(a, btn);
+      menu.remove();
+      return;
+    } else {
+      menu.innerHTML = RESUMES.map(r => `
+        <a class="resume-dd-item" href="${r.file}" download="${downloadName(r)}" role="menuitem">
+          <span class="role">${r.label}</span>
+          <span class="meta">${r.note || ''} · PDF</span>
+        </a>
+      `).join('');
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dd.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => {
+      if(!dd.contains(e.target)) {
+        dd.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape'){
+        dd.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  function renderResumeFooter(){
+    const el = document.getElementById('resume-inline-footer');
+    if(!el) return;
+    if(RESUMES.length === 0){
+      el.innerHTML = '';
+      return;
+    }
+    el.innerHTML = RESUMES.map((r, i) => `
+      <a class="btn ${i === 0 ? 'primary' : ''}" href="${r.file}" download="${downloadName(r)}">
+        Download — ${r.label}
+      </a>
+    `).join('');
+  }
+
+  renderResumeDropdown();
+  renderResumeFooter();
 </script>
 
 </body>
